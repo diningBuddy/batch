@@ -7,7 +7,7 @@ import requests
 client_id = os.getenv('NAVER_CLIENT_ID')
 client_secret = os.getenv('NAVER_CLIENT_SECRET')
 
-df = pd.read_csv('restaurants.csv')
+df = pd.read_csv('../autocomplete/restaurants.csv')
 
 
 def get_coordinates(address):

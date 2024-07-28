@@ -21,7 +21,7 @@ create_table(cursor)
 conn.commit()
 
 # Insert restaurants, categories
-with open('../restaurants.csv', mode='r') as file:
+with open('../autocomplete/restaurants.csv', mode='r') as file:
   csv_dict = csv.DictReader(file)
   categories = dict()
   category_id = 1
@@ -46,7 +46,7 @@ with open('../restaurants.csv', mode='r') as file:
 conn.commit()
 
 # Insert menus
-with open('../menus.csv', mode='r') as file:
+with open('../autocomplete/menus.csv', mode='r') as file:
   csv_dict = csv.DictReader(file)
   for menu in csv_dict:
     insert_into_menus(cursor, menu)
