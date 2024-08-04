@@ -10,7 +10,7 @@ now = datetime.datetime.now()
 index_name = f"restaurant_{now.strftime('%Y_%m_%d_%H-%M')}"
 
 # Elasticsearch 클라이언트 설정
-es = Elasticsearch("http://localhost:9200")
+es = Elasticsearch("http://es-singlenode:9200")
 
 # 새 인덱스 생성 및 매핑 설정
 if not es.indices.exists(index=index_name):
