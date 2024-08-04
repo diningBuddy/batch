@@ -87,8 +87,8 @@ def apply_highlighting(org_data, highlighted_data):
   return highlighted_org_data
 
 
-file_path = 'restaurants.csv'
-menu_file_path = 'menus.csv'
+file_path = '../csv/restaurants.csv'
+menu_file_path = '../csv/menus.csv'
 
 df = pd.read_csv(file_path)
 menu_df = pd.read_csv(menu_file_path)
