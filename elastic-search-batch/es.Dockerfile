@@ -1,9 +1,9 @@
 FROM python:3.8-slim
 
 COPY es-requirements.txt es-requirements.txt
-COPY ../autocomplete/restaurants.csv restaurants.csv
+COPY ../csv/restaurants.csv restaurants.csv
 COPY csv-to-es.py csv-to-es.py
-COPY ../autocomplete/menus.csv menus.csv
+COPY ../csv/menus.csv menus.csv
 
 RUN pip install -r es-requirements.txt
 

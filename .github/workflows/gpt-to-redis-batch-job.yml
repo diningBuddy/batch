@@ -2,11 +2,11 @@ name: GPT To Redis Batch Job
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-  schedule:
-    - cron: '0 2 * * *'
+#  push:
+#    branches:
+#      - main
+#  schedule:
+#    - cron: '0 2 * * *'
 
 jobs:
   batch-job:

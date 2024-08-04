@@ -3,8 +3,8 @@ import datetime
 import pandas as pd
 from elasticsearch import Elasticsearch
 
-restaurant_df = pd.read_csv('../autocomplete/restaurants.csv')
-menu_df = pd.read_csv('../autocomplete/menus.csv')
+restaurant_df = pd.read_csv('../csv/restaurants.csv')
+menu_df = pd.read_csv('../csv/menus.csv')
 
 now = datetime.datetime.now()
 index_name = f"restaurant_{now.strftime('%Y_%m_%d_%H-%M')}"
