@@ -6,7 +6,7 @@ WORKDIR /app
 
 # 스크립트 복사
 COPY ./restaurant_db_manager.py /app/restaurant_db_manager.py
-COPY ./kakao_categories.txt /app/kakao_categories.csv
+COPY ./kakao_categories.txt /app/kakao_categories.txt
 COPY ./kakao_menus.csv /app/kakao_menus.csv
 COPY ./kakao_restaurants.csv /app/kakao_restaurants.csv
 COPY ./insert_menus.py /app/insert_menus.py
