@@ -26,13 +26,13 @@ def fetch_user_activity_data():
 
   query = """
         SELECT 
-    r.id AS restaurant_id,
+    r.id AS id,
     COALESCE(r.bookmark_count,0) AS bookmark_count,
     COALESCE(r.kakao_rating_avg, 0) AS rating_avg,
     COALESCE(r.kakao_rating_count,0) AS rating_count
     FROM restaurants r
     LEFT JOIN restaurant_bookmarks rb ON r.id = rb.restaurant_id
-    LEFT JOIN restaurant_ratings rr ON r.id = rr.restaurant_id
+    LEFT JOIN restaurants_ratings rr ON r.id = rr.restaurant_id
     GROUP BY r.id;
     """
 
