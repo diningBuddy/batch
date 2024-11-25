@@ -6,19 +6,17 @@ def create_database_tables(db_config):
   cursor = connection.cursor()
 
   try:
-    # Create restaurants table
+    # 먼저 생성해야 하는 테이블
+    create_users_table(cursor)
     create_restaurants_table(cursor)
-    # Create menus table
-    create_menus_table(cursor)
-    # Create restaurant_categories table
-    create_restaurant_categories_table(cursor)
-    # Create restaurant_category_mapping table
-    create_restaurant_category_mapping_table(cursor)
-    # Create restaurants_ratings table
-    create_restaurants_ratings_table(cursor)
     create_restaurant_bookmark_lists(cursor)
+
+    # 참조하는 테이블 생성
     create_restaurant_bookmark_list_mapping(cursor)
-    # Create restaurant_bookmarks table
+    create_menus_table(cursor)
+    create_restaurant_categories_table(cursor)
+    create_restaurant_category_mapping_table(cursor)
+    create_restaurants_ratings_table(cursor)
     create_restaurant_bookmarks_table(cursor)
 
     connection.commit()
@@ -122,34 +120,37 @@ def create_restaurants_ratings_table(cursor):
     """
   )
   cursor.execute(create_table_query)
+
 def create_restaurant_bookmark_lists(cursor):
   create_table_query = (
     """
-    CREATE TABLE IF NOT EXISTS restaurant_bookmark_lists
-    (
+    CREATE TABLE IF NOT EXISTS restaurant_bookmark_lists (
         id       INT AUTO_INCREMENT PRIMARY KEY,
         user_id  INT NOT NULL COMMENT '유저 ID',
-        CONSTRAINT user_bookmark_lists_ibfk_1
+        CONSTRAINT fk_user_id_bookmark_lists
             FOREIGN KEY (user_id) REFERENCES users (id)
             ON DELETE CASCADE
     )
     """
   )
   cursor.execute(create_table_query)
+
+
 def create_restaurant_bookmark_list_mapping(cursor):
   create_table_query = (
     """
     CREATE TABLE IF NOT EXISTS restaurant_bookmark_list_mapping (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    list_id INT NOT NULL COMMENT '북마크 리스트 ID',
-    restaurant_id INT NOT NULL COMMENT '식당 ID',
-    FOREIGN KEY (list_id) REFERENCES bookmark_lists (id) ON DELETE CASCADE,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id) ON DELETE CASCADE
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        list_id INT NOT NULL COMMENT '북마크 리스트 ID',
+        restaurant_id INT NOT NULL COMMENT '식당 ID',
+        CONSTRAINT fk_list_id_bookmark_mapping FOREIGN KEY (list_id) REFERENCES restaurant_bookmark_lists (id) ON DELETE CASCADE,
+        CONSTRAINT fk_restaurant_id_bookmark_mapping FOREIGN KEY (restaurant_id) REFERENCES restaurants (id) ON DELETE CASCADE
     )
-
     """
   )
   cursor.execute(create_table_query)
+
+
 def create_restaurant_bookmarks_table(cursor):
   create_table_query = (
     """
@@ -159,6 +160,17 @@ def create_restaurant_bookmarks_table(cursor):
         user_id INTEGER NOT NULL COMMENT '유저 ID',
         PRIMARY KEY (id),
         FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE CASCADE
+    )
+    """
+  )
+  cursor.execute(create_table_query)
+
+def create_users_table(cursor):
+  create_table_query = (
+    """
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER NOT NULL AUTO_INCREMENT,
+        PRIMARY KEY (id)
     )
     """
   )
