@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.2.0
+    container_name: es-singlenode
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - action.destructive_requires_name=false
+    command: >
+      sh -c '
+        elasticsearch-plugin install --batch analysis-nori;
+        /usr/local/bin/docker-entrypoint.sh elasticsearch'
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.2.0
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: skku
+      MYSQL_USER: skku-user
+      MYSQL_PASSWORD: skku-pw
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  create-tables:
+    build:
+      context: ../mkRDB
+      dockerfile: create-tables.Dockerfile
+    container_name: create-tables
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  restaurant-db-manager:
+    build:
+      context: ../mkRDB
+      dockerfile: restaurant-db-manager.Dockerfile
+    container_name: restaurant-db-manager
+    depends_on:
+      create-tables:
+        condition: service_started
+    networks:
+      - app-network
+    restart: "no"
+
+  initial-indexer:
+    build:
+      context: .
+      dockerfile: initial-index.Dockerfile
+    container_name: initial-indexer
+    depends_on:
+      restaurant-db-manager:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  daily-update:
+    build:
+      context: .
+      dockerfile: daily-update.Dockerfile
+    container_name: daily-update
+    depends_on:
+      mysql:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  es_data:
+  mysql_data:
