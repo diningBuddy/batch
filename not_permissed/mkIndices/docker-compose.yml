@@ -79,6 +79,11 @@ services:
     networks:
       - app-network
     restart: "no"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "restaurant-db-manager", "-u", "skku-user", "-pskku-pw" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   initial-indexer:
     build:
@@ -87,7 +92,7 @@ services:
     container_name: initial-indexer
     depends_on:
       restaurant-db-manager:
-        condition: service_healthy
+        condition: service_started
     networks:
       - app-network
 
