@@ -23,6 +23,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    restart: always
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.2.0
@@ -36,6 +37,7 @@ services:
         condition: service_healthy
     networks:
       - app-network
+    restart: always
 
   mysql:
     image: mysql:8.0
@@ -56,59 +58,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  create-tables:
-    build:
-      context: ../mkRDB
-      dockerfile: create-tables.Dockerfile
-    container_name: create-tables
-    depends_on:
-      mysql:
-        condition: service_healthy
-    networks:
-      - app-network
-
-  restaurant-db-manager:
-    build:
-      context: ../mkRDB
-      dockerfile: restaurant-db-manager.Dockerfile
-    container_name: restaurant-db-manager
-    depends_on:
-      create-tables:
-        condition: service_started
-    networks:
-      - app-network
-    restart: "no"
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "restaurant-db-manager", "-u", "skku-user", "-pskku-pw" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  initial-indexer:
-    build:
-      context: .
-      dockerfile: initial-index.Dockerfile
-    container_name: initial-indexer
-    depends_on:
-      restaurant-db-manager:
-        condition: service_started
-    networks:
-      - app-network
-
-  daily-update:
-    build:
-      context: .
-      dockerfile: daily-update.Dockerfile
-    container_name: daily-update
-    depends_on:
-      mysql:
-        condition: service_healthy
-      elasticsearch:
-        condition: service_healthy
-    networks:
-      - app-network
-    restart: unless-stopped
+    restart: always
 
 networks:
   app-network:
