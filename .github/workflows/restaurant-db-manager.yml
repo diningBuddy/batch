@@ -1,0 +1,20 @@
+name: Restaurant DB Manager
+
+on:
+  workflow_dispatch: # 수동 트리거로 실행
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'main'
+
+jobs:
+  run-db-manager:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Run restaurant-db-manager
+        run: docker-compose run --rm restaurant-db-manager

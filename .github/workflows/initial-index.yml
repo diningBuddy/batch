@@ -1,0 +1,15 @@
+name: Initial Index Creation
+
+on:
+  workflow_dispatch: # 수동 트리거로 실행
+
+jobs:
+  run-initial-index:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Run initial-index
+        run: docker-compose run --rm initial-indexer
