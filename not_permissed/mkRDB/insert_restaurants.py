@@ -18,7 +18,7 @@ def insert_restaurants(db_config, csv_file_path):
         longitude = float(row['longitude']) if row['longitude'] else None
 
         # Check if restaurant already exists by its 'id'
-        cursor.execute("SELECT COUNT(*) FROM restaurants WHERE id = %s", (row['id'],))
+        cursor.execute("SELECT COUNT(*) FROM restaurants WHERE name = %s", (row['name'],))
         (count,) = cursor.fetchone()
 
         # Prepare JSON fields
