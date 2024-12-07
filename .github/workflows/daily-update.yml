@@ -1,0 +1,16 @@
+name: Daily Update
+
+on:
+  schedule:
+    - cron: "0 2 * * *" # 매일 새벽 2시 실행
+
+jobs:
+  run-daily-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Run daily-update
+        run: docker-compose run --rm daily-update
