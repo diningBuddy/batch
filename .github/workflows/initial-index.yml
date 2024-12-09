@@ -1,15 +1,32 @@
 name: Initial Index Creation
 
 on:
-  workflow_dispatch: # 수동 트리거로 실행
+  workflow_run:
+    workflows:
+      - Restaurant DB Manager
+    types:
+      - completed
 
 jobs:
-  run-initial-index:
+  index-creator:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Run initial-index
-        run: docker-compose run --rm initial-indexer
+      - name: Build and Push Docker Image
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -t your-dockerhub-user/initial-index:latest .
+          docker push your-dockerhub-user/initial-index:latest
+
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            docker pull your-dockerhub-user/initial-index:latest
+            docker run --rm your-dockerhub-user/initial-index:latest

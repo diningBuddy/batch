@@ -1,16 +1,29 @@
-name: Daily Update
+name: Daily Update Job
 
 on:
   schedule:
-    - cron: "0 2 * * *" # 매일 새벽 2시 실행
+    - cron: "*/1 * * * *" # 매 분마다 실행
 
 jobs:
-  run-daily-update:
+  daily-updater:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Run daily-update
-        run: docker-compose run --rm daily-update
+      - name: Build and Push Docker Image
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -t your-dockerhub-user/daily-update:latest .
+          docker push your-dockerhub-user/daily-update:latest
+
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            docker pull your-dockerhub-user/daily-update:latest
+            docker run --rm your-dockerhub-user/daily-update:latest
