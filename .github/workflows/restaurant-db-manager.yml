@@ -15,8 +15,8 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t your-dockerhub-user/restaurant-db-manager:latest .
-          docker push your-dockerhub-user/restaurant-db-manager:latest
+          docker build -t camelia9999/diningbuddy:restaurant-db-manager .
+          docker push camelia9999/diningbuddy:restaurant-db-manager
 
       - name: Deploy on EC2
         uses: appleboy/ssh-action@v0.1.4
@@ -26,5 +26,5 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            docker pull your-dockerhub-user/restaurant-db-manager:latest
-            docker run --rm your-dockerhub-user/restaurant-db-manager:latest
+            docker pull camelia9999/diningbuddy:restaurant-db-manager
+            docker run camelia9999/diningbuddy:restaurant-db-manager

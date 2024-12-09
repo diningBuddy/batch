@@ -17,8 +17,8 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t your-dockerhub-user/initial-index:latest .
-          docker push your-dockerhub-user/initial-index:latest
+          docker build -t camelia9999/diningbuddy:initial-index .
+          docker push camelia9999/diningbuddy:initial-index
 
       - name: Deploy on EC2
         uses: appleboy/ssh-action@v0.1.4
@@ -28,5 +28,5 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            docker pull your-dockerhub-user/initial-index:latest
-            docker run --rm your-dockerhub-user/initial-index:latest
+            docker pull camelia9999/diningbuddy:initial-index
+            docker run camelia9999/diningbuddy:initial-index
