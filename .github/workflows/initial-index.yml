@@ -17,16 +17,26 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t camelia9999/diningbuddy:initial-index .
+          docker build -t camelia9999/diningbuddy:initial-index -f mysql-to-es/initial-index.Dockerfile ./mysql-to-es
           docker push camelia9999/diningbuddy:initial-index
 
-      - name: Deploy on EC2
+      - name: Deploy on OCI Instance
         uses: appleboy/ssh-action@v0.1.4
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: 22
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            # 기존 컨테이너 정리
+            docker stop initial-index || true
+            docker rm initial-index || true
+            
+            # 새 이미지 풀링 및 실행
             docker pull camelia9999/diningbuddy:initial-index
-            docker run camelia9999/diningbuddy:initial-index
+            
+            # 인덱스 생성 실행
+            docker run --name initial-index \
+              --network ubuntu_app-network \
+              -e ELASTICSEARCH_HOST=es-singlenode \
+              -e MYSQL_HOST=mysql \
+              camelia9999/diningbuddy:initial-index

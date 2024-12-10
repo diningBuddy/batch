@@ -15,16 +15,19 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t camelia9999/diningbuddy:restaurant-db-manager -f csv-to-mysql/restaurant-db-manager.Dockerfile .
+          docker build -t camelia9999/diningbuddy:restaurant-db-manager -f csv-to-mysql/restaurant-db-manager.Dockerfile ./csv-to-mysql
           docker push camelia9999/diningbuddy:restaurant-db-manager
 
       - name: Deploy on OCI Instance
-        uses: appleboy/ssh-action@v0.1.4
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST_PUBLIC_IP }}       # OCI VM 인스턴스 퍼블릭 IP 주소
           username: ubuntu                  # OCI 기본 유저명
           key: ${{ secrets.SSH_PRIVATE_KEY }} # GitHub Secrets에 저장한 프라이빗 키
           port: 22
           script: |
+            docker stop db-manager || true
+            docker rm db-manager || true
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker pull camelia9999/diningbuddy:restaurant-db-manager
-            docker run -d --name db-manager -p 80:80 camelia9999/diningbuddy:restaurant-db-manager
+            docker run -d --name db-manager -p 8080:80 --network ubuntu_app-network camelia9999/diningbuddy:restaurant-db-manager
