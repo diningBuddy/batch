@@ -1,11 +1,8 @@
 name: Initial Index Creation
 
 on:
-  workflow_run:
-    workflows:
-      - Restaurant DB Manager
-    types:
-      - completed
+  schedule:
+    - cron: "*/5 * * * *"  # 매 분마다 실행
 
 jobs:
   index-creator:
@@ -21,17 +18,19 @@ jobs:
           docker push camelia9999/diningbuddy:initial-index
 
       - name: Deploy on OCI Instance
-        uses: appleboy/ssh-action@v0.1.4
+        uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          host: ${{ secrets.HOST_PUBLIC_IP }}       # OCI VM 인스턴스 퍼블릭 IP 주소
+          username: ubuntu                  # OCI 기본 유저명
+          key: ${{ secrets.SSH_PRIVATE_KEY }} # GitHub Secrets에 저장한 프라이빗 키
+          port: 22
           script: |
             # 기존 컨테이너 정리
             docker stop initial-index || true
             docker rm initial-index || true
-            
+
             # 새 이미지 풀링 및 실행
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker pull camelia9999/diningbuddy:initial-index
             
             # 인덱스 생성 실행
