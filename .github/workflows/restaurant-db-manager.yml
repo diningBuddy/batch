@@ -1,9 +1,7 @@
 name: Restaurant DB Manager
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   db-manager:
@@ -12,17 +10,23 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Set up Docker Buildx
+        run: |
+          docker buildx create --use
+          docker buildx inspect --bootstrap
+
       - name: Build and Push Docker Image
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t camelia9999/diningbuddy:restaurant-db-manager -f csv-to-mysql/restaurant-db-manager.Dockerfile ./csv-to-mysql
-          docker push camelia9999/diningbuddy:restaurant-db-manager
+          docker buildx build --platform linux/amd64,linux/arm64/v8 \
+            -t camelia9999/diningbuddy:restaurant-db-manager
+            -f csv-to-mysql/restaurant-db-manager.Dockerfile ./csv-to-mysql --push
 
       - name: Deploy on OCI Instance
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST_PUBLIC_IP }}       # OCI VM 인스턴스 퍼블릭 IP 주소
-          username: ubuntu                  # OCI 기본 유저명
+          username: ${{ secrets.HOST_USER_NAME }}                  # OCI 기본 유저명
           key: ${{ secrets.SSH_PRIVATE_KEY }} # GitHub Secrets에 저장한 프라이빗 키
           port: 22
           script: |
