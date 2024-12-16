@@ -43,10 +43,15 @@ def fetch_user_activity_data():
   return data
 
 def update_elasticsearch(data):
+
+  # 최신 인덱스 찾기
+  sorted_indices = get_sorted_indices()
+  latest_index = sorted_indices[-1]
+
   actions = [
     {
       "_op_type": "update",
-      "_index": "restaurant",
+      "_index": latest_index,
       "_id": restaurant['id'],
       "doc": {
         "bookmark_count": restaurant['bookmark_count'],
@@ -100,14 +105,12 @@ if __name__ == "__main__":
   user_activity_data = fetch_user_activity_data()
   update_elasticsearch(user_activity_data)
 
-  # 1. 모든 인덱스 가져오기 및 정렬
-  sorted_indices = get_sorted_indices()
+  try:
+    sorted_indices = get_sorted_indices()
+    latest_index = sorted_indices[-1]
+    update_alias(latest_index)
+    delete_oldest_index(sorted_indices)
 
-  # 2. 최신 인덱스에 Alias 설정
-  latest_index = sorted_indices[-1]
-  update_alias(latest_index)
-
-  # 3. 가장 오래된 인덱스 삭제
-  delete_oldest_index(sorted_indices)
-
-  print("Daily update complete")
+    print("Daily update complete")
+  except Exception as e:
+    print(f"Update failed: {e}")
