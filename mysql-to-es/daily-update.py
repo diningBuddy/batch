@@ -104,7 +104,7 @@ def delete_oldest_index(sorted_indices):
 if __name__ == "__main__":
   user_activity_data = fetch_user_activity_data()
   update_elasticsearch(user_activity_data)
-
+  latest_index=None
   try:
     sorted_indices = get_sorted_indices()
     latest_index = sorted_indices[-1]
@@ -114,3 +114,10 @@ if __name__ == "__main__":
     print("Daily update complete")
   except Exception as e:
     print(f"Update failed: {e}")
+    if latest_index:
+      try:
+        es.indices.delete(index=latest_index)
+      except Exception as cleanup_error:
+        print(f"Warning: Could not clean up {latest_index} : {cleanup_error}")
+    #오류 상황을 상위로 전파, 스크립트가 실패되어 종료됨.
+    raise
