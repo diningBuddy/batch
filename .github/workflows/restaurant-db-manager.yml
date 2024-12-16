@@ -10,11 +10,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Set up Docker Buildx
+        run: |
+          docker buildx create --use
+          docker buildx inspect --bootstrap
+
       - name: Build and Push Docker Image
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t camelia9999/diningbuddy:restaurant-db-manager -f csv-to-mysql/restaurant-db-manager.Dockerfile ./csv-to-mysql
-          docker push camelia9999/diningbuddy:restaurant-db-manager
+          docker buildx build --platform linux/amd64,linux/arm64/v8 \
+            -t camelia9999/diningbuddy:restaurant-db-manager
+            -f csv-to-mysql/restaurant-db-manager.Dockerfile ./csv-to-mysql --push
 
       - name: Deploy on OCI Instance
         uses: appleboy/ssh-action@master

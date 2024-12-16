@@ -11,13 +11,24 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Build and Push Docker Image
+      - name: Set up Docker Buildx
         run: |
+          # Buildx를 활성화
+          docker buildx create --use
+          docker buildx inspect --bootstrap
+
+      - name: Build and Push Multi-Platform Docker Image
+        run: |
+          # Docker Hub 로그인
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t camelia9999/diningbuddy:initial-index -f mysql-to-es/initial-index.Dockerfile ./mysql-to-es
-          docker push camelia9999/diningbuddy:initial-index
-          docker build -t camelia9999/diningbuddy:daily-update -f mysql-to-es/daily-update.Dockerfile ./mysql-to-es
-          docker push camelia9999/diningbuddy:daily-update
+          
+          # Multi-platform 이미지 빌드 및 푸시
+          docker buildx build --platform linux/amd64,linux/arm64/v8 \
+            -t camelia9999/diningbuddy:initial-index \
+            -f mysql-to-es/initial-index.Dockerfile ./mysql-to-es --push
+          docker buildx build --platform linux/amd64,linux/arm64/v8 \
+            -t camelia9999/diningbuddy:daily-update \
+            -f mysql-to-es/daily-update.Dockerfile ./mysql-to-es --push
 
       - name: Deploy on OCI Instance
         uses: appleboy/ssh-action@master
@@ -27,10 +38,23 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
+            # 기존 컨테이너 정리
             docker stop initial-index daily-update || true
             docker rm initial-index daily-update || true
+
+            # 최신 다중 플랫폼 이미지 풀링
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker pull camelia9999/diningbuddy:initial-index
             docker pull camelia9999/diningbuddy:daily-update
-            docker run --name initial-index --network ubuntu_app-network -e ELASTICSEARCH_HOST=es-singlenode -e MYSQL_HOST=mysql camelia9999/diningbuddy:initial-index
-            docker run --name daily-update --network ubuntu_app-network camelia9999/diningbuddy:daily-update
+
+            # initial-index 컨테이너 실행
+            docker run --name initial-index \
+              --network ubuntu_app-network \
+              -e ELASTICSEARCH_HOST=es-singlenode \
+              -e MYSQL_HOST=mysql \
+              camelia9999/diningbuddy:initial-index
+
+            # daily-update 컨테이너 실행
+            docker run --name daily-update \
+              --network ubuntu_app-network \
+              camelia9999/diningbuddy:daily-update
