@@ -24,7 +24,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST_PUBLIC_IP }}       # OCI VM 인스턴스 퍼블릭 IP 주소
-          username: ubuntu                  # OCI 기본 유저명
+          username: ${{ secrets.HOST_USER_NAME }}                  # OCI 기본 유저명
           key: ${{ secrets.SSH_PRIVATE_KEY }} # GitHub Secrets에 저장한 프라이빗 키
           port: 22
           script: |
