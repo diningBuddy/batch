@@ -7,7 +7,7 @@ def insert_category_mapping(db_config):
 
   try:
     # Get all restaurants and their original categories
-    cursor.execute("SELECT id, original_category FROM restaurants")
+    cursor.execute("SELECT id, original_categories FROM restaurants")
     restaurants = cursor.fetchall()
 
     for restaurant_id, original_category in restaurants:
@@ -26,7 +26,7 @@ def insert_category_mapping(db_config):
 
       # Check if mapping already exists
       cursor.execute(
-          "SELECT COUNT(*) FROM restaurant_category_mapping WHERE restaurant_id = %s AND category_id = %s",
+          "SELECT COUNT(*) FROM restaurant_categories_mapping WHERE restaurant_id = %s AND category_id = %s",
           (restaurant_id, category_id)
       )
       (count,) = cursor.fetchone()
@@ -34,7 +34,7 @@ def insert_category_mapping(db_config):
       if count == 0:
         # Insert the mapping if it doesn't exist
         cursor.execute(
-            "INSERT INTO restaurant_category_mapping (restaurant_id, category_id) VALUES (%s, %s)",
+            "INSERT INTO restaurant_categories_mapping (restaurant_id, category_id) VALUES (%s, %s)",
             (restaurant_id, category_id)
         )
         connection.commit()

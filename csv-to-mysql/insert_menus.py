@@ -31,20 +31,20 @@ def insert_menus(db_config, csv_file_path):
           continue
 
         # Convert empty strings to None for certain fields
-        price = row['price'].strip() if row['price'] else None
+        price = int(row['price'].strip().replace(',','')) if row['price'] else None
         description = row['description'].strip() if row['description'] else None
         is_representative = True if row['is_representative'].strip() == '대표' else False
         image_url = row['image_url'].strip() if row['image_url'] else None
 
         # Check if menu already exists by restaurant_id and menu_name
-        cursor.execute("SELECT COUNT(*) FROM menus WHERE restaurant_id = %s AND menu_name = %s", (restaurant_id, row['menu_name']))
+        cursor.execute("SELECT COUNT(*) FROM menus WHERE restaurant_id = %s AND name = %s", (restaurant_id, row['menu_name']))
         (count,) = cursor.fetchone()
 
         if count > 0:
           # If menu exists, update the existing entry
           update_query = (
             "UPDATE menus SET price=%s, description=%s, is_representative=%s, image_url=%s "
-            "WHERE restaurant_id=%s AND menu_name=%s"
+            "WHERE restaurant_id=%s AND name=%s"
           )
           cursor.execute(update_query, (
             price, description, is_representative, image_url, restaurant_id, row['menu_name']
@@ -52,7 +52,7 @@ def insert_menus(db_config, csv_file_path):
         else:
           # Insert a new menu entry
           insert_query = (
-            "INSERT INTO menus (restaurant_id, menu_name, price, description, is_representative, image_url) "
+            "INSERT INTO menus (restaurant_id, name, price, description, is_representative, image_url) "
             "VALUES (%s, %s, %s, %s, %s, %s)"
           )
           cursor.execute(insert_query, (
