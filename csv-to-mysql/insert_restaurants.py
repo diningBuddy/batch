@@ -38,11 +38,12 @@ def insert_restaurants(db_config, csv_file_path):
         })
 
         operation_times = row['operation_time']  # Assuming operation_time is already in JSON format
-
+        bookmark_count =0;
+        view_count =0;
         if count > 0:
           # If restaurant exists, update the existing entry
           update_query = (
-            "UPDATE restaurants SET name=%s, original_category=%s, review_count=%s, address=%s, "
+            "UPDATE restaurants SET name=%s, original_categories=%s, review_count=%s, address=%s, "
             "contact_number=%s, kakao_rating_avg=%s, kakao_rating_count=%s, facility_infos=%s, operation_infos=%s, operation_times=%s, latitude=%s, longitude=%s "
             "WHERE id=%s"
           )
@@ -54,14 +55,14 @@ def insert_restaurants(db_config, csv_file_path):
         else:
           # Insert a new restaurant entry
           insert_query = (
-            "INSERT INTO restaurants (id, name, original_category, review_count, address, contact_number, "
-            "kakao_rating_avg, kakao_rating_count, facility_infos, operation_infos, operation_times, latitude, longitude) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            "INSERT INTO restaurants (id, name, original_categories, review_count, address, contact_number, "
+            "kakao_rating_avg, kakao_rating_count, facility_infos, operation_infos, operation_times, latitude, longitude,bookmark_count,view_count)"
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
           )
           cursor.execute(insert_query, (
             row['id'], row['name'], row['category'], row['review_count'], row['address'],
             row['phone_number'], kakao_rating_avg, kakao_rating_count,
-            facility_infos, operation_infos, operation_times, latitude, longitude
+            facility_infos, operation_infos, operation_times, latitude, longitude,bookmark_count, view_count
           ))
 
         # Commit after each row to ensure data integrity

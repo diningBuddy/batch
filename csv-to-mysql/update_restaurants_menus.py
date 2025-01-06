@@ -8,12 +8,12 @@ def update_restaurants_menus(db_config):
 
   try:
     # Get all restaurant IDs
-    cursor.execute("SELECT name FROM restaurants")
-    restaurant_names = cursor.fetchall()
+    cursor.execute("SELECT id FROM restaurants")
+    restaurant_ids = cursor.fetchall()
 
-    for (restaurant_name,) in restaurant_names:
+    for (restaurant_id,) in restaurant_ids:
       # Get all menus for the restaurant
-      cursor.execute("SELECT menu_name, price, description, is_representative, image_url FROM menus WHERE restaurant_name = %s", (restaurant_name,))
+      cursor.execute("SELECT name, price, description, is_representative, image_url FROM menus WHERE restaurant_id = %s", (restaurant_id,))
       menus = cursor.fetchall()
 
       # Prepare menus data in JSON format
@@ -23,7 +23,7 @@ def update_restaurants_menus(db_config):
           "menu_name": menu[0],
           "price": menu[1],
           "description": menu[2],
-          "is_representative": menu[3],
+          "is_representative": menu[3].decode('utf-8'),
           "image_url": menu[4]
         }
         menus_list.append(menu_data)
@@ -31,8 +31,8 @@ def update_restaurants_menus(db_config):
       menus_json = json.dumps(menus_list, ensure_ascii=False)
 
       # Update the restaurant's menus field
-      update_query = "UPDATE restaurants SET menus = %s WHERE name = %s"
-      cursor.execute(update_query, (menus_json, restaurant_name))
+      update_query = "UPDATE restaurants SET menus = %s WHERE id = %s"
+      cursor.execute(update_query, (menus_json, restaurant_id))
 
     # Commit all updates
     connection.commit()

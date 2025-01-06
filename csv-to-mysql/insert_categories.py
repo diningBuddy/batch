@@ -22,27 +22,27 @@ def insert_categories(db_config, txt_file_path):
           print(f"Processing group: {current_group}")  # 디버깅 로그
 
           # Find or insert group in restaurant_categories table
-          cursor.execute("SELECT id FROM restaurant_categories WHERE name = %s AND category_groups = %s", (current_group, current_group))
+          cursor.execute("SELECT id FROM restaurant_categories WHERE name = %s AND category_group = %s", (current_group, current_group))
           result = cursor.fetchone()
 
           if result:
             group_id = result[0]
           else:
-            cursor.execute("INSERT INTO restaurant_categories (name, category_groups) VALUES (%s, %s)", (current_group, current_group))
+            cursor.execute("INSERT INTO restaurant_categories (name, category_group) VALUES (%s, %s)", (current_group, current_group))
             connection.commit()
             group_id = cursor.lastrowid
         elif group_id is not None:  # 소분류 식별 (대분류가 설정된 경우에만 처리)
           category_name = line
           print(f"Adding category: {category_name} under group_id: {group_id}")  # 디버깅 로그
 
-          cursor.execute("SELECT COUNT(*) FROM restaurant_categories WHERE name = %s AND category_groups = %s", (category_name, current_group))
+          cursor.execute("SELECT COUNT(*) FROM restaurant_categories WHERE name = %s AND category_group = %s", (category_name, current_group))
           (count,) = cursor.fetchone()
 
           if count > 0:
             # 이미 존재하므로 업데이트 필요 없음
             continue
           else:
-            cursor.execute("INSERT INTO restaurant_categories (name, category_groups) VALUES (%s, %s)", (category_name, current_group))
+            cursor.execute("INSERT INTO restaurant_categories (name, category_group) VALUES (%s, %s)", (category_name, current_group))
             connection.commit()
 
   except Exception as e:
