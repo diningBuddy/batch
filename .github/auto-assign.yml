@@ -4,11 +4,10 @@ addAssignees: author
 
 reviewers:
   - sinkyoungdeok
-  - goathoon
   - lsc713
   - Ting97ok
 
-numberOfReviewers: 0
+numberOfReviewers: 2
 
 skipKeywords:
   - wip
