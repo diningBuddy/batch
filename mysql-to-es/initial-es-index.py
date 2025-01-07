@@ -28,7 +28,8 @@ def fetch_initial_data():
         (
             SELECT JSON_ARRAYAGG(
                 JSON_OBJECT(
-                    'menu_name', menu_name,
+                    'restaurant_id', restaurant_id,
+                    'menu_name', name,
                     'price', price,
                     'description', description,
                     'is_representative', is_representative,
@@ -36,14 +37,14 @@ def fetch_initial_data():
                 )
             )
             FROM (
-                SELECT DISTINCT m.menu_name, m.price, m.description, m.is_representative, m.image_url
+                SELECT DISTINCT m.restaurant_id, m.name, m.price, m.description, m.is_representative, m.image_url
                 FROM menus m
                 WHERE m.restaurant_id = r.id
             ) AS distinct_menus
         ) AS menus,
         GROUP_CONCAT(DISTINCT rc.name) AS categories
         FROM restaurants r
-        LEFT JOIN restaurant_category_mapping rcm ON r.id = rcm.restaurant_id
+        LEFT JOIN restaurant_categories_mapping rcm ON r.id = rcm.restaurant_id
         LEFT JOIN restaurant_categories rc ON rcm.category_id = rc.id
         GROUP BY r.id;
 
@@ -85,8 +86,12 @@ if not es.indices.exists(index=index_name):
           "operation_infos": {"type": "object"},
           "operation_times": {"type": "object"},
           "original_category": {"type": "text", "analyzer": "korean"},
-          "categories": {"type": "keyword"},  # 변경
+          "category": {"type": "keyword"},  # 변경
           "location": {"type": "geo_point"},
+          "kakao_review_count": {"type": "long"},
+          "kakao_rating_avg": {"type": "float"},
+          "review_count": {"type": "long"},
+          "rating_avg": {"type": "float"},
           "menus": {
             "type": "nested",
             "properties": {
@@ -127,7 +132,7 @@ def index_data():
           "facility_infos": json.loads(restaurant['facility_infos']) if restaurant['facility_infos'] else None,
           "operation_infos": json.loads(restaurant['operation_infos']) if restaurant['operation_infos'] else None,
           "operation_times": json.loads(restaurant['operation_times']) if restaurant['operation_times'] else None,
-          "original_category": restaurant['original_category'],
+          "original_category": restaurant['original_categories'],
           "categories": categories,
           "location": {
             "lat": float(restaurant['latitude']) if restaurant['latitude'] else None,
@@ -141,8 +146,9 @@ def index_data():
       if menus:
         for menu in menus:
           cleaned_menu = {
+            "restaurant_id": menu.get('restaurant_id',''),
             "menu_name": menu.get('menu_name', ''),
-            "price": menu.get('price', '').replace(',', '') if menu.get('price') else '',
+            "price": menu.get('price', '') if menu.get('price') else '',
             "description": menu.get('description', ''),
             "is_representative": bool(menu.get('is_representative', False))
           }
@@ -166,6 +172,12 @@ def index_data():
     print(f"Bulk index error: {str(e)}")
     for error in e.errors:
       print(f"Document error: {error}")
+
+  # 앨리어스 확인 및 설정
+  if not es.indices.exists_alias(name="restaurant"):
+    # 앨리어스가 없으면 새 인덱스에 앨리어스 생성
+    es.indices.put_alias(index=index_name, name="restaurant")
+    print(f"Alias 'restaurant' created for index {index_name}")
 
 if __name__ == "__main__":
   index_data()
