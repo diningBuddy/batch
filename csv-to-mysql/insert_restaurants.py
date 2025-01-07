@@ -37,7 +37,26 @@ def insert_restaurants(db_config, csv_file_path):
           "package": row['package']
         })
 
-        operation_times = row['operation_time']  # Assuming operation_time is already in JSON format
+        operation_times = json.loads(row['operation_time'].replace('""','"'))
+
+        operation_times_list = []
+
+        # 각 요일을 순회하여 구조 변환
+        for day, times in list(operation_times.items()):
+          operation_time_info = {
+            "start_time": times["시작시간"],
+            "end_time": times["종료시간"],
+            "break_start_time": times["휴게시작시간"],
+            "break_end_time": times["휴게종료시간"],
+            "last_order": times["라스트오더"]
+          }
+          operation_times_list.append({
+            "day_of_the_week": day,
+            "operation_time_info": operation_time_info
+          })
+
+        operation_times_json = json.dumps(operation_times_list)
+
         bookmark_count =0;
         view_count =0;
         if count > 0:
@@ -50,7 +69,7 @@ def insert_restaurants(db_config, csv_file_path):
           cursor.execute(update_query, (
             row['name'], row['category'], row['review_count'], row['address'],
             row['phone_number'], kakao_rating_avg, kakao_rating_count,
-            facility_infos, operation_infos, operation_times, latitude, longitude, row['id']
+            facility_infos, operation_infos, operation_times_json, latitude, longitude, row['id']
           ))
         else:
           # Insert a new restaurant entry
@@ -62,7 +81,7 @@ def insert_restaurants(db_config, csv_file_path):
           cursor.execute(insert_query, (
             row['id'], row['name'], row['category'], row['review_count'], row['address'],
             row['phone_number'], kakao_rating_avg, kakao_rating_count,
-            facility_infos, operation_infos, operation_times, latitude, longitude,bookmark_count, view_count
+            facility_infos, operation_infos, operation_times_json, latitude, longitude,bookmark_count, view_count
           ))
 
         # Commit after each row to ensure data integrity
