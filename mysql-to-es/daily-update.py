@@ -11,7 +11,7 @@ ES_HOST = os.getenv('ES_HOST', 'es-singlenode')#ES_HOST docker-compose에 있는
 es = Elasticsearch([f'http://{ES_HOST}:9200'])
 
 # Alias 이름
-ALIAS_NAME = "restaurant_latest"
+ALIAS_NAME = "restaurant"
 
 
 def fetch_user_activity_data():
@@ -44,14 +44,10 @@ def fetch_user_activity_data():
 
 def update_elasticsearch(data):
 
-  # 최신 인덱스 찾기
-  sorted_indices = get_sorted_indices()
-  latest_index = sorted_indices[-1]
-
   actions = [
     {
       "_op_type": "update",
-      "_index": latest_index,
+      "_index": "restaurant",
       "_id": restaurant['id'],
       "doc": {
         "bookmark_count": restaurant['bookmark_count'],
