@@ -13,21 +13,20 @@ def update_restaurants_menus(db_config):
 
     for (restaurant_id,) in restaurant_ids:
       # Get all menus for the restaurant
-      cursor.execute("SELECT restaurant_id, name, price, description, is_representative, image_url FROM menus WHERE restaurant_id = %s", (restaurant_id,))
+      cursor.execute("SELECT name, price, description, is_representative, image_url FROM menus WHERE restaurant_id = %s", (restaurant_id,))
       menus = cursor.fetchall()
 
       # Prepare menus data in JSON format
       menus_list = []
       for menu in menus:
-        is_representative = menu[4] == b'\x01'
+        is_representative = menu[3] == b'\x01'
 
         menu_data = {
-          "restaurant_id": menu[0],
-          "menu_name": menu[1],
-          "price": menu[2],
-          "description": menu[3],
+          "menu_name": menu[0],
+          "price": menu[1],
+          "description": menu[2],
           "is_representative": is_representative,
-          "image_url": menu[5]
+          "image_url": menu[4]
         }
         menus_list.append(menu_data)
 
