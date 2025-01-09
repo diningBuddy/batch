@@ -19,11 +19,13 @@ def update_restaurants_menus(db_config):
       # Prepare menus data in JSON format
       menus_list = []
       for menu in menus:
+        is_representative = menu[3] == b'\x01'
+
         menu_data = {
           "menu_name": menu[0],
           "price": menu[1],
           "description": menu[2],
-          "is_representative": menu[3].decode('utf-8'),
+          "is_representative": is_representative,
           "image_url": menu[4]
         }
         menus_list.append(menu_data)
