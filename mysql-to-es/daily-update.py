@@ -47,7 +47,7 @@ def update_elasticsearch(data):
   actions = [
     {
       "_op_type": "update",
-      "_index": "restaurant",
+      "_index": ALIAS_NAME,
       "_id": restaurant['id'],
       "doc": {
         "bookmark_count": restaurant['bookmark_count'],
