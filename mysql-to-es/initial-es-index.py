@@ -44,8 +44,8 @@ def fetch_initial_data():
         ) AS menus,
         GROUP_CONCAT(DISTINCT rc.name) AS categories
         FROM restaurants r
-        LEFT JOIN restaurant_categories_mapping rcm ON r.id = rcm.restaurant_id
-        LEFT JOIN restaurant_categories rc ON rcm.category_id = rc.id
+        LEFT JOIN restaurant_categories rcm ON r.id = rcm.restaurant_id
+        LEFT JOIN categories rc ON rcm.category_id = rc.id
         GROUP BY r.id;
 
    """
@@ -84,9 +84,15 @@ if not es.indices.exists(index=index_name):
           "contact_number": {"type": "keyword"},
           "facility_infos": {"type": "object"},
           "operation_infos": {"type": "object"},
-          "operation_times": {"type": "object"},
+          "operation_times": {
+            "type": "nested",
+            "properties": {
+              "day_of_the_week": {"type": "keyword"},
+              "operation_time_info": {"type": "object"},
+            }
+          },
           "original_category": {"type": "text", "analyzer": "korean"},
-          "category": {"type": "keyword"},  # 변경
+          "category": {"type": "keyword"},
           "location": {"type": "geo_point"},
           "kakao_rating_count": {"type": "long"},
           "kakao_rating_avg": {"type": "float"},
@@ -96,7 +102,7 @@ if not es.indices.exists(index=index_name):
             "type": "nested",
             "properties": {
               "menu_name": {"type": "text", "analyzer": "korean"},
-              "price": {"type": "keyword"},  # 변경
+              "price": {"type": "keyword"},
               "description": {"type": "text", "analyzer": "korean"},
               "is_representative": {"type": "boolean"}
             }
@@ -120,7 +126,7 @@ def index_data():
       operation_times = json.loads(restaurant['operation_times']) if restaurant['operation_times'] else None
 
       # categories 처리
-      categories = restaurant['categories'].split(',') if restaurant['categories'] else []
+      categories = restaurant['categories'] if restaurant['categories'] else []
 
       doc = {
         "_index": index_name,
@@ -137,7 +143,7 @@ def index_data():
           "kakao_rating_avg": restaurant['kakao_rating_avg'],
           "operation_times": [],
           "original_category": restaurant['original_categories'],
-          "categories": categories,
+          "category": categories,
           "location": {
             "lat": float(restaurant['latitude']) if restaurant['latitude'] else None,
             "lon": float(restaurant['longitude']) if restaurant['longitude'] else None
@@ -153,7 +159,8 @@ def index_data():
             "menu_name": menu.get('menu_name', ''),
             "price": menu.get('price', '') if menu.get('price') else '',
             "description": menu.get('description', ''),
-            "is_representative": bool(menu.get('is_representative', False))
+            "is_representative": bool(menu.get('is_representative', False)),
+            "image_url": menu.get('image_url','')
           }
           doc["_source"]["menus"].append(cleaned_menu)
 
