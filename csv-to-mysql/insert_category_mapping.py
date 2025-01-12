@@ -15,7 +15,7 @@ def insert_category_mapping(db_config):
         continue
 
       # Find the matching category id in restaurant_categories (소분류 우선 검색)
-      cursor.execute("SELECT id FROM restaurant_categories WHERE name = %s", (original_category,))
+      cursor.execute("SELECT id FROM categories WHERE name = %s", (original_category,))
       result = cursor.fetchone()
 
       if result:
@@ -26,7 +26,7 @@ def insert_category_mapping(db_config):
 
       # Check if mapping already exists
       cursor.execute(
-          "SELECT COUNT(*) FROM restaurant_categories_mapping WHERE restaurant_id = %s AND category_id = %s",
+          "SELECT COUNT(*) FROM restaurant_categories WHERE restaurant_id = %s AND category_id = %s",
           (restaurant_id, category_id)
       )
       (count,) = cursor.fetchone()
@@ -34,7 +34,7 @@ def insert_category_mapping(db_config):
       if count == 0:
         # Insert the mapping if it doesn't exist
         cursor.execute(
-            "INSERT INTO restaurant_categories_mapping (restaurant_id, category_id) VALUES (%s, %s)",
+            "INSERT INTO restaurant_categories (restaurant_id, category_id) VALUES (%s, %s)",
             (restaurant_id, category_id)
         )
         connection.commit()
