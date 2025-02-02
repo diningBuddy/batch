@@ -58,32 +58,88 @@ def insert_restaurants(db_config, csv_file_path):
         operation_times_json = json.dumps(operation_times_list)
         bookmark_count =0;
         view_count =0;
+
         if count > 0:
-          # If restaurant exists, update the existing entry
           update_query = (
-            "UPDATE restaurants SET name=%s, original_categories=%s, review_count=%s, address=%s, "
-            "contact_number=%s, kakao_rating_avg=%s, kakao_rating_count=%s, facility_infos=%s, operation_infos=%s, operation_times=%s, latitude=%s, longitude=%s "
+            "UPDATE restaurants "
+            "SET "
+            "name=%s, "
+            "original_categories=%s, "
+            "review_count=%s, "
+            "address=%s, "
+            "contact_number=%s, "
+            "kakao_rating_avg=%s, "
+            "kakao_rating_count=%s, "
+            "facility_infos=%s, "
+            "operation_infos=%s, "
+            "operation_times=%s, "
+            "latitude=%s, "
+            "longitude=%s, "
+            "representative_image_url=%s"
             "WHERE id=%s"
           )
-          cursor.execute(update_query, (
-            row['name'], row['category'], row['review_count'], row['address'],
-            row['phone_number'], kakao_rating_avg, kakao_rating_count,
-            facility_infos, operation_infos, operation_times_json, latitude, longitude, row['id']
-          ))
+          cursor.execute(update_query,
+                         (
+                                row['name'],
+                                row['category'],
+                                row['review_count'],
+                                row['address'],
+                                row['phone_number'],
+                                kakao_rating_avg,
+                                kakao_rating_count,
+                                facility_infos,
+                                operation_infos,
+                                operation_times_json,
+                                latitude,
+                                longitude,
+                                row['main_photo_url'],
+                                row['id']
+                              )
+                         )
         else:
           # Insert a new restaurant entry
           insert_query = (
-            "INSERT INTO restaurants (id, name, original_categories, review_count, address, contact_number, "
-            "kakao_rating_avg, kakao_rating_count, facility_infos, operation_infos, operation_times, latitude, longitude,bookmark_count,view_count)"
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-          )
-          cursor.execute(insert_query, (
-            row['id'], row['name'], row['category'], row['review_count'], row['address'],
-            row['phone_number'], kakao_rating_avg, kakao_rating_count,
-            facility_infos, operation_infos, operation_times_json, latitude, longitude,bookmark_count, view_count
-          ))
+                          "INSERT INTO restaurants ("
+                                                    "id, "
+                                                    "name, "
+                                                    "original_categories, "
+                                                    "review_count, "
+                                                    "address, "
+                                                    "contact_number, "
+                                                    "kakao_rating_avg, "
+                                                    "kakao_rating_count, "
+                                                    "facility_infos, "
+                                                    "operation_infos, "
+                                                    "operation_times, "
+                                                    "latitude, "
+                                                    "longitude,"
+                                                    "bookmark_count,"
+                                                    "view_count, "
+                                                    "representative_image_url"
+                                                    ")"
+                          "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                        )
+          cursor.execute(insert_query,
+                         (
+                                row['id'],
+                                row['name'],
+                                row['category'],
+                                row['review_count'],
+                                row['address'],
+                                row['phone_number'],
+                                kakao_rating_avg,
+                                kakao_rating_count,
+                                facility_infos,
+                                operation_infos,
+                                operation_times_json,
+                                latitude,
+                                longitude,
+                                bookmark_count,
+                                view_count,
+                                row['main_photo_url']
+                              )
+                         )
 
-        # Commit after each row to ensure data integrity
         connection.commit()
   except Exception as e:
     print(f"Error: {e}")
