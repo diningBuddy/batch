@@ -92,7 +92,15 @@ if not es.indices.exists(index=index_name):
             }
           },
           "original_category": {"type": "text", "analyzer": "korean"},
-          "category": {"type": "keyword"},
+          "categories": {
+            "type": "keyword",
+            "fields": {
+              "text": {
+                "type": "text",
+                "analyzer": "korean"
+              }
+            }
+          },
           "location": {"type": "geo_point"},
           "kakao_rating_count": {"type": "long"},
           "kakao_rating_avg": {"type": "float"},
@@ -125,8 +133,7 @@ def index_data():
       menus = json.loads(restaurant['menus']) if restaurant['menus'] else []
       operation_times = json.loads(restaurant['operation_times']) if restaurant['operation_times'] else None
 
-      # categories 처리
-      categories = restaurant['categories'] if restaurant['categories'] else []
+      categories = restaurant['categories'].split(',') if restaurant['categories'] else []
 
       doc = {
         "_index": index_name,
@@ -135,6 +142,7 @@ def index_data():
           "id": restaurant['id'],
           "name": restaurant['name'],
           "address": restaurant['address'],
+          "review_count": restaurant['review_count'],
           "rating_avg": restaurant['rating_avg'],
           "contact_number": restaurant['contact_number'],
           "facility_infos": json.loads(restaurant['facility_infos']) if restaurant['facility_infos'] else None,
@@ -143,7 +151,7 @@ def index_data():
           "kakao_rating_avg": restaurant['kakao_rating_avg'],
           "operation_times": [],
           "original_category": restaurant['original_categories'],
-          "category": categories,
+          "categories": categories,
           "location": {
             "lat": float(restaurant['latitude']) if restaurant['latitude'] else None,
             "lon": float(restaurant['longitude']) if restaurant['longitude'] else None
