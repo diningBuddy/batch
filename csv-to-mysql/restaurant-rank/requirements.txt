@@ -1,0 +1,4 @@
+pymysql
+selenium==4.9.1
+pandas
+webdriver-manager
