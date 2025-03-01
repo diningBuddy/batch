@@ -4,6 +4,7 @@ import insert_menus
 import update_restaurants_menus
 import insert_categories
 import insert_category_mapping
+import update_restaurant_ranks
 
 def main():
 
@@ -27,6 +28,9 @@ def main():
   update_restaurants_menus.update_restaurants_menus(db_config)
 
   insert_category_mapping.insert_category_mapping(db_config)
+
+  kakao_map_ranks_csv_file_path = 'kakao_map_ranks.csv'
+  update_restaurant_ranks.insert_ranks(db_config, kakao_map_ranks_csv_file_path)
 
 if __name__ == "__main__":
   main()
