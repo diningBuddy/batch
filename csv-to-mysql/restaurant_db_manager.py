@@ -29,7 +29,7 @@ def main():
 
   insert_category_mapping.insert_category_mapping(db_config)
 
-  kakao_map_ranks_csv_file_path = 'kakao_map_ranks.csv'
+  kakao_map_ranks_csv_file_path = 'restaurant-rank/kakao_map_ranks.csv'
   update_restaurant_ranks.insert_ranks(db_config, kakao_map_ranks_csv_file_path)
 
 if __name__ == "__main__":
