@@ -31,8 +31,8 @@ COPY restaurant-rank/kakao_map_ranks.csv .
 # 환경 변수 설정
 ENV MYSQL_HOST=mysql \
     MYSQL_PORT=3306 \
-    MYSQL_USER=root \
-    MYSQL_PASSWORD=1234 \
+    MYSQL_USER=skku-user \
+    MYSQL_PASSWORD=skku-pw \
     MYSQL_DB=skku
 
 # 실행 명령
