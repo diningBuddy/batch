@@ -1,0 +1,50 @@
+name: Initial Index Creation
+
+on:
+  schedule:
+    - cron: "0 2 * * *"  # 매일 새벽 2시마다 실행
+
+jobs:
+  index-creator:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        run: |
+          # Buildx를 활성화
+          docker buildx create --use
+          docker buildx inspect --bootstrap
+
+      - name: Build and Push Multi-Platform Docker Image
+        run: |
+          # Docker Hub 로그인
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          
+          # Multi-platform 이미지 빌드 및 푸시
+          docker buildx build --platform linux/amd64,linux/arm64/v8 \
+            -t camelia9999/diningbuddy:update_restaurant_ranks \
+            -f csv-to-mysql/update_restaurant_ranks.Dockerfile ./csv-to-mysql --push
+
+      - name: Deploy on OCI Instance
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_PUBLIC_IP }}
+          username: ${{ secrets.HOST_USER_NAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            # 기존 컨테이너 정리
+            docker stop update_restaurant_ranks || true
+            docker rm update_restaurant_ranks || true
+
+            # 최신 다중 플랫폼 이미지 풀링
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker pull camelia9999/diningbuddy:update_restaurant_ranks
+
+            # initial-index 컨테이너 실행
+            docker run --name update_restaurant_ranks \
+              --network ubuntu_app-network \
+              -e MYSQL_HOST=mysql \
+              camelia9999/diningbuddy:update_restaurant_ranks
