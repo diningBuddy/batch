@@ -23,12 +23,12 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push Multi-Platform Docker Image
+      - name: Build and Push Docker Image
         uses: docker/build-push-action@v4
         with:
           context: ./csv-to-mysql
           file: ./csv-to-mysql/restaurant-rank/update_restaurant_ranks.Dockerfile
-          platforms: linux/amd64,linux/arm64/v8
+          platforms: linux/amd64
           push: true
           tags: camelia9999/diningbuddy:update_restaurant_ranks
 
