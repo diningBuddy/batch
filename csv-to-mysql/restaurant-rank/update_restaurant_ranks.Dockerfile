@@ -2,6 +2,7 @@ FROM python:3.8-slim
 
 ARG TARGETARCH
 
+# 크롬 설치를 위한 의존성 패키지
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
@@ -13,8 +14,9 @@ RUN apt-get update && apt-get install -y \
         apt-get update && \
         apt-get install -y google-chrome-stable; \
     else \
-        apt-get update && \
-        apt-get install -y chromium-chromedriver; \
+        wget -O /usr/bin/chromium https://github.com/Eloston/ungoogled-chromium/releases/latest/download/chromium-linux-arm64.tar.xz && \
+        tar -xvf chromium-linux-arm64.tar.xz -C /usr/bin/ && \
+        chmod +x /usr/bin/chromium; \
     fi \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
