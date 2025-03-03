@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 def main():
   try:
     db_config = {
-      'host': os.environ.get('MYSQL_HOST', 'mysql'),
+      'host': os.environ.get('MYSQL_HOST', 'localhost'),
       'port': int(os.environ.get('MYSQL_PORT', 3306)),
       'user': os.environ.get('MYSQL_USER', 'root'),
       'password': os.environ.get('MYSQL_PASSWORD', '1234'),
@@ -37,8 +37,8 @@ def main():
     logger.info("2. 데이터베이스 적재 시작")
     start_time = time.time()
 
-    from update_restaurant_ranks import insert_ranks
-    insert_ranks(db_config, "kakao_map_ranks.csv")
+    from update_restaurant_ranks import update_ranks
+    update_ranks(db_config, "kakao_map_ranks.csv")
 
     logger.info(f"데이터베이스 적재 완료 (소요시간: {time.time() - start_time:.2f}초)")
     logger.info("전체 작업 완료!")
