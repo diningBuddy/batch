@@ -45,14 +45,12 @@ jobs:
             docker stop update_restaurant_ranks || true
             docker rm update_restaurant_ranks || true
 
-            # 최신 이미지 풀링
-            docker pull camelia9999/diningbuddy:update_restaurant_ranks
+            docker pull --platform linux/amd64 camelia9999/diningbuddy:update_restaurant_ranks
 
-            # 컨테이너 실행
-            docker run --name update_restaurant_ranks \
-              --network ubuntu_app-network \
-              -e MYSQL_HOST=mysql \
-              -e MYSQL_USER=skku-user \
-              -e MYSQL_PASSWORD=skku-pw \
-              -e MYSQL_DB=skku \
-              camelia9999/diningbuddy:update_restaurant_ranks
+            docker run --platform linux/amd64 --name update_restaurant_ranks \
+            --network ubuntu_app-network \
+            -e MYSQL_HOST=${{ secrets.MYSQL_HOST }} \
+            -e MYSQL_USER=${{ secrets.MYSQL_USER }} \
+            -e MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
+            -e MYSQL_DB=${{ secrets.MYSQL_DB }} \
+            camelia9999/diningbuddy:update_restaurant_ranks

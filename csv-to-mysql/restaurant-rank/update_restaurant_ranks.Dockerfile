@@ -6,10 +6,14 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     unzip \
     curl \
-    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable \
+    && if [ "$TARGETARCH" = "amd64" ]; then \
+        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+        echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list && \
+        apt-get update && \
+        apt-get install -y google-chrome-stable; \
+    else \
+        apt-get install -y chromium-browser; \
+    fi \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
