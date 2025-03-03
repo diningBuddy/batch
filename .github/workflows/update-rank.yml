@@ -2,8 +2,10 @@ name: Update Restaurant Ranks
 
 on:
   schedule:
-    - cron: "0 2 * * *"  # 매일 새벽 2시마다 실행
-  workflow_dispatch:     # 수동 실행 옵션 추가
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+  pull_request:
+    branches: [ KAN-321 ]
 
 jobs:
   update-restaurant-ranks:
