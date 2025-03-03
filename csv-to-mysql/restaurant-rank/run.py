@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 def main():
   try:
     db_config = {
-      'host': os.environ.get('MYSQL_HOST', 'localhost'),
+      'host': os.environ.get('MYSQL_HOST', 'mysql'),
       'port': int(os.environ.get('MYSQL_PORT', 3306)),
       'user': os.environ.get('MYSQL_USER', 'root'),
       'password': os.environ.get('MYSQL_PASSWORD', '1234'),
