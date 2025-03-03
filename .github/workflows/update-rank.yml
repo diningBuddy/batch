@@ -31,7 +31,7 @@ jobs:
         with:
           context: ./csv-to-mysql
           file: ./csv-to-mysql/restaurant-rank/update_restaurant_ranks.Dockerfile
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64/v8
           push: true
           tags: camelia9999/diningbuddy:update_restaurant_ranks
 
@@ -48,9 +48,9 @@ jobs:
             docker stop update_restaurant_ranks || true
             docker rm update_restaurant_ranks || true
 
-            docker pull --platform linux/amd64 camelia9999/diningbuddy:update_restaurant_ranks
+            docker pull --platform=linux/arm64 camelia9999/diningbuddy:update_restaurant_ranks
 
-            docker run --platform linux/amd64 --name update_restaurant_ranks \
+            docker run -d --platform=linux/arm64 --name update_restaurant_ranks \
             --network ubuntu_app-network \
             -e MYSQL_HOST=${{ secrets.MYSQL_HOST }} \
             -e MYSQL_USER=${{ secrets.MYSQL_USER }} \
