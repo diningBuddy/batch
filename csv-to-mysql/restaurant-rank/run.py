@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 def main():
   try:
     db_config = {
-      'host': os.environ.get('MYSQL_HOST', 'localhost'),
+      'host': os.environ.get('MYSQL_HOST', 'mysql'),
       'port': int(os.environ.get('MYSQL_PORT', 3306)),
       'user': os.environ.get('MYSQL_USER', 'root'),
       'password': os.environ.get('MYSQL_PASSWORD', '1234'),
@@ -26,7 +26,7 @@ def main():
     start_time = time.time()
 
     try:
-      subprocess.run(["python", "kakao_rank.py"], check=True)
+      subprocess.run(["python3", "kakao_rank.py"], check=True)
       logger.info(f"크롤링 완료: kakao_map_ranks.csv (소요시간: {time.time() - start_time:.2f}초)")
     except subprocess.CalledProcessError as e:
       logger.error(f"크롤링 실패: {str(e)}")

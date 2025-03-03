@@ -1,23 +1,4 @@
-FROM python:3.8-slim
-
-ARG TARGETARCH
-
-RUN apt-get update && apt-get install -y \
-    wget \
-    gnupg \
-    unzip \
-    curl \
-    && if [ "$TARGETARCH" = "amd64" ]; then \
-        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-        echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list && \
-        apt-get update && \
-        apt-get install -y google-chrome-stable; \
-    else \
-        apt-get update && \
-        apt-get install -y chromium-chromedriver; \
-    fi \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+FROM mcr.microsoft.com/playwright/python:v1.40.0-jammy
 
 WORKDIR /app
 
@@ -25,13 +6,16 @@ WORKDIR /app
 COPY restaurant-rank/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Playwright 설치 및 Chromium 브라우저 다운로드
+RUN playwright install chromium
+
 # 애플리케이션 파일 복사
 COPY restaurant-rank/kakao_restaurants.csv .
 COPY restaurant-rank/kakao_rank.py .
 COPY restaurant-rank/update_restaurant_ranks.py .
 COPY restaurant-rank/run.py .
 
-# 기존 데이터 파일 복사 (선택사항 - 크롤링 실패 시 백업용)
+# 기존 데이터 파일 복사 (선택사항)
 COPY restaurant-rank/kakao_map_ranks.csv .
 
 # 환경 변수 설정
