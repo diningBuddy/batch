@@ -2,6 +2,9 @@ name: Restaurant DB Manager
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+
 
 jobs:
   db-manager:
@@ -19,7 +22,7 @@ jobs:
         run: |
           echo '${{ secrets.DOCKER_PASSWORD }}' | docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin
           docker buildx build --platform linux/amd64,linux/arm64/v8 \
-            -t camelia9999/diningbuddy:restaurant-db-manager
+            -t camelia9999/diningbuddy:restaurant-db-manager \
             -f csv-to-mysql/restaurant-db-manager.Dockerfile ./csv-to-mysql --push
 
       - name: Deploy on OCI Instance
