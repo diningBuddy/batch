@@ -49,7 +49,7 @@ jobs:
             docker pull --platform=linux/arm64 camelia9999/diningbuddy:update_restaurant_ranks
 
             docker run -d --platform=linux/arm64 --name update_restaurant_ranks \
-            --network ubuntu_app-network \
+            --network host \
             -e MYSQL_HOST=${{ secrets.MYSQL_HOST }} \
             -e MYSQL_USER=${{ secrets.MYSQL_USER }} \
             -e MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
