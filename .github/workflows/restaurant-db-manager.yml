@@ -17,7 +17,7 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          echo '${{ secrets.DOCKER_PASSWORD }}' | docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin
           docker buildx build --platform linux/amd64,linux/arm64/v8 \
             -t camelia9999/diningbuddy:restaurant-db-manager
             -f csv-to-mysql/restaurant-db-manager.Dockerfile ./csv-to-mysql --push
@@ -32,6 +32,6 @@ jobs:
           script: |
             docker stop db-manager || true
             docker rm db-manager || true
-            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            echo '${{ secrets.DOCKER_PASSWORD }}' | docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin
             docker pull camelia9999/diningbuddy:restaurant-db-manager
             docker run -d --name db-manager -p 8080:80 --network ubuntu_app-network camelia9999/diningbuddy:restaurant-db-manager
