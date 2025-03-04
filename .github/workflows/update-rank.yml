@@ -1,11 +1,9 @@
 name: Update Restaurant Ranks
 
 on:
-  schedule:
-    - cron: "0 2 * * *"
+#  schedule:
+#    - cron: "0 2 * * *"
   workflow_dispatch:
-  pull_request:
-    branches: [ main ]
 
 jobs:
   update-restaurant-ranks:
