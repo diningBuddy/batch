@@ -32,7 +32,6 @@ def fetch_user_activity_data():
     COALESCE(r.kakao_rating_count,0) AS rating_count
     FROM restaurants r
     LEFT JOIN restaurant_bookmarks rb ON r.id = rb.restaurant_id
-    LEFT JOIN restaurants_ratings rr ON r.id = rr.restaurant_id
     GROUP BY r.id;
     """
 
