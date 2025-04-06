@@ -15,8 +15,6 @@ def create_database_tables(db_config):
     create_restaurant_bookmark_list_mapping(cursor)
     create_menus_table(cursor)
     create_restaurant_categories_table(cursor)
-    create_restaurant_category_mapping_table(cursor)
-    create_restaurants_ratings_table(cursor)
     create_restaurant_bookmarks_table(cursor)
 
     connection.commit()
@@ -84,38 +82,6 @@ def create_restaurant_categories_table(cursor):
         name VARCHAR(100) NOT NULL COMMENT '소분류 이름',
         category_groups VARCHAR(100) NOT NULL COMMENT '대분류',
         PRIMARY KEY (id)
-    )
-    """
-  )
-  cursor.execute(create_table_query)
-
-def create_restaurant_category_mapping_table(cursor):
-  create_table_query = (
-    """
-    CREATE TABLE IF NOT EXISTS restaurant_category_mapping (
-        id INTEGER NOT NULL AUTO_INCREMENT,
-        restaurant_id INTEGER NOT NULL COMMENT '레스토랑 ID',
-        category_id INTEGER NOT NULL COMMENT '소분류 ID',
-        PRIMARY KEY (id),
-        FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE CASCADE,
-        FOREIGN KEY (category_id) REFERENCES restaurant_categories(id) ON DELETE CASCADE
-    )
-    """
-  )
-  cursor.execute(create_table_query)
-
-def create_restaurants_ratings_table(cursor):
-  create_table_query = (
-    """
-    CREATE TABLE IF NOT EXISTS restaurants_ratings
-    (
-        id            INTEGER AUTO_INCREMENT PRIMARY KEY,
-        restaurant_id INTEGER NOT NULL COMMENT '식당 ID',
-        user_id       INTEGER NOT NULL COMMENT '유저 ID',
-        rating        FLOAT NOT NULL COMMENT '유저 평점 ',
-        CONSTRAINT restaurants_ratings_ibfk_1
-            FOREIGN KEY (restaurant_id) REFERENCES restaurants (id)
-                ON DELETE CASCADE
     )
     """
   )

@@ -54,10 +54,10 @@ def update_ranks(db_config, csv_file_path):
             restaurant_id = result[0]
 
             insert_query = """
-                            INSERT INTO restaurant_ranks (restaurant_id, rank_number)
-                            VALUES (%s, %s)
-                        """
-            cursor.execute(insert_query, (restaurant_id, rank_number))
+                INSERT INTO restaurant_ranks (restaurant_id, rank_number, scrap_category)
+                VALUES (%s, %s, %s)
+            """
+            cursor.execute(insert_query, (restaurant_id, rank_number, "전체"))
             inserted_count += 1
           else:
             not_found_count += 1
@@ -68,7 +68,7 @@ def update_ranks(db_config, csv_file_path):
           logger.error(f"Error processing row {row}: {e}")
 
       connection.commit()
-      logger.info(f"DB 적재 결과: 삽입={inserted_count}, 매칭 실패={not_found_count}, 오류={error_count}")
+      logger.info(f"DB 적재 결과: 삽입={inserted_count}, 매칭 실패={not_found_count}, 카테고리 매칭 실패={category_not_found_count}, 오류={error_count}")
 
   except Exception as e:
     connection.rollback()
@@ -82,6 +82,7 @@ def update_ranks(db_config, csv_file_path):
   return {
     "inserted": inserted_count,
     "not_found": not_found_count,
+    "category_not_found": category_not_found_count,
     "error": error_count
   }
 
@@ -100,5 +101,7 @@ if __name__ == "__main__":
     'database': os.environ.get('MYSQL_DB', 'skku')
   }
 
-  csv_file_path = 'kakao_map_ranks.csv'
+  # 스크립트 실행 디렉토리를 기준으로 파일 경로 설정
+  script_dir = os.path.dirname(os.path.abspath(__file__))
+  csv_file_path = os.path.join(script_dir, 'kakao_map_ranks.csv')
   update_ranks(db_config, csv_file_path)
