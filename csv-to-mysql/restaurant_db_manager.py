@@ -8,10 +8,10 @@ import insert_category_mapping
 def main():
 
   db_config = {
-    'host': 'mysql',
+    'host': 'localhost',
     'port': 3306,
-    'user': 'skku-user',
-    'password': 'skku-pw',
+    'user': 'root',
+    'password': '1234',
     'database': 'skku'
   }
 
