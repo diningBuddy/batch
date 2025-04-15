@@ -1,0 +1,11 @@
+﻿rank,name,lat,lon,category,category_name,review_count,review_rating,thumbnail,address
+1,오스테리아우노,37.298065185546875,126.96919250488281,category_western,이탈리안,60.0,4.16,http://t1.daumcdn.net/local/kakaomapPhoto/review/355ece9d025f2963b26ffc321191c322c644b1a8?original,경기도 수원시 장안구 율전동
+2,아늑,37.29758834838867,126.97200775146484,category_western,이탈리안,62.0,4.04,http://t1.kakaocdn.net/mystore/C8ABF5FD080C4FB0A88309F414FD0B40,경기도 수원시 장안구 율전동
+3,몽키키친,37.298126220703125,126.9736099243164,category_western,양식,17.0,4.23,http://t1.kakaocdn.net/fiy_reboot/place/28B6BCD3B8914A87A144B5702AD49AE2,경기도 수원시 장안구 율전동
+4,에스쿱,37.30247116088867,126.9720458984375,category_western,이탈리안,14.0,4.71,http://t1.daumcdn.net/place/7787515A0B3A466F914127004CCBAE78,경기도 수원시 장안구 율전동
+5,파치 성대점,37.29883575439453,126.97237396240234,category_western,이탈리안,10.0,4.69,http://t1.daumcdn.net/local/kakaomapPhoto/review/4f4451f4644f692540fed5483b7ecd12a7298645?original,경기도 수원시 장안구 율전동
+6,리꼬리또,37.297122955322266,126.97149658203125,category_western,"멕시칸,브라질",6.0,4.66,,경기도 수원시 장안구 율전동
+7,버거스올마이티 수원성균관대점,37.29766845703125,126.96871185302734,category_western,햄버거,8.0,5.0,http://t1.daumcdn.net/place/76A72039D9A4495BA40F3058EDA19CAB,경기도 수원시 장안구 율전동
+8,정성식탁,37.298763275146484,126.9728012084961,category_western,양식,,,http://t1.kakaocdn.net/mystore/C05B312F762A4BB287FFEE2865E50513,경기도 수원시 장안구 율전동
+9,버거운버거 수원성균관대점,37.29795455932617,126.97322082519531,category_western,햄버거,14.0,3.0,http://t1.daumcdn.net/local/kakaomapPhoto/review/5503bd91dd07f3c6229439c46d53fd3be167880c?original,경기도 수원시 장안구 율전동
+10,도레미파스타,37.297237396240234,126.97230529785156,category_western,이탈리안,26.0,4.61,http://t1.daumcdn.net/local/kakaomapPhoto/review/e988b3be9ba50988c2236a12c5e933efeaba23f7?original,경기도 수원시 장안구 율전동
