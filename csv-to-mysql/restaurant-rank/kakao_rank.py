@@ -107,6 +107,9 @@ if __name__ == "__main__":
     "category_all",
     "category_korean",
     "category_japanese",
-    "category_western"
+    "category_western",
+    "category_asian",
+    "category_cafe",
+    "category_chinese"
   ]
   crawl_kakao_map_ranks(categories)
