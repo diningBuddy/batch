@@ -25,8 +25,6 @@ def crawl_kakao_map_ranks(categories=None):
       logger.error(f"kakao_restaurants.csv 로드 실패: {str(e)}", exc_info=True)
       raise
 
-    all_parsed_data = []
-
     with sync_playwright() as p:
       browser = p.chromium.launch(headless=True)
 
@@ -80,8 +78,6 @@ def crawl_kakao_map_ranks(categories=None):
             category_df.to_csv(filename, index=False, encoding="utf-8-sig")
             logger.info(f"CSV 파일 저장 완료: {filename} ({len(category_parsed_data)}개 항목)")
 
-          all_parsed_data.extend(category_parsed_data)
-
         except Exception as e:
           logger.error(f"카테고리 '{category}' 크롤링 중 오류: {str(e)}")
 
@@ -89,12 +85,6 @@ def crawl_kakao_map_ranks(categories=None):
           page.close()
 
       browser.close()
-
-    if all_parsed_data:
-      df = pd.DataFrame(all_parsed_data)
-      combined_filename = "kakao_map_ranks_all_categories.csv"
-      df.to_csv(combined_filename, index=False, encoding="utf-8-sig")
-      logger.info(f"통합 CSV 파일 저장 완료: {combined_filename} (총 {len(all_parsed_data)}개 항목)")
 
     return "크롤링 완료"
 
