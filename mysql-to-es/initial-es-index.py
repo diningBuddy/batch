@@ -14,9 +14,9 @@ es = Elasticsearch([f'http://{ES_HOST}:9200'])
 
 def fetch_initial_data():
   connection = mysql.connector.connect(
-      user='root',
-      password='1234',
-      host='localhost',
+      user='skku-user',
+      password='skku-pw',
+      host='mysql',
       database='skku',
       port=3306
   )
