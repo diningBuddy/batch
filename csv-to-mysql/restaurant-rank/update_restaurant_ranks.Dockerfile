@@ -16,7 +16,7 @@ COPY restaurant-rank/update_restaurant_ranks.py .
 COPY restaurant-rank/run.py .
 
 # 기존 데이터 파일 복사 (선택사항)
-COPY restaurant-rank/kakao_map_ranks.csv .
+COPY restaurant-rank/kakao_map_ranks_category_*.csv .
 
 # 환경 변수 설정
 ENV MYSQL_HOST=mysql \
